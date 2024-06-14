@@ -22,6 +22,9 @@ public class ShopClient {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             connected = true;
 
+            String encodedKey = in.readLine();
+            CryptoUtil.setDecodedKey(encodedKey);
+
             new Thread(new Listener()).start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -35,7 +38,8 @@ public class ShopClient {
 
     public void sendMessage(String message) {
         if (connected) {
-            out.println(message);
+            String encryptedMessage = CryptoUtil.encrypt(message);
+            out.println(encryptedMessage);
         } else {
             System.out.println("Not connected to the server.");
         }
@@ -47,7 +51,8 @@ public class ShopClient {
             try {
                 String message;
                 while ((message = in.readLine()) != null) {
-                    System.out.println("Server: " + message);
+                    String decryptedMessage = CryptoUtil.decrypt(message);
+                    System.out.println("Server: " + decryptedMessage);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

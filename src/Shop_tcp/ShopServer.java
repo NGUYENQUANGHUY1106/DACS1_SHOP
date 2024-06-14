@@ -48,10 +48,13 @@ public class ShopServer {
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(socket.getOutputStream(), true);
 
+                out.println(CryptoUtil.getEncodedKey());
+
                 String message;
                 while ((message = in.readLine()) != null) {
-                    System.out.println("Received: " + message);
-                    broadcast(message, this);
+                    String decryptedMessage = CryptoUtil.decrypt(message);
+                    System.out.println("Received: " + decryptedMessage);
+                    broadcast(decryptedMessage, this);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -65,7 +68,8 @@ public class ShopServer {
         }
 
         public void sendMessage(String message) {
-            out.println(message);
+            String encryptedMessage = CryptoUtil.encrypt(message);
+            out.println(encryptedMessage);
         }
     }
 }

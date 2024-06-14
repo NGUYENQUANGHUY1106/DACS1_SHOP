@@ -113,39 +113,53 @@ public class Register extends JFrame {
 		panel.add(btn_dktaikhoan);
 		
 		btn_dktaikhoan.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        try {
-		            if (txtusername1.getText().isEmpty() || txtPhoneNmuber1.getText().isEmpty() || txtEmail1.getText().isEmpty() ||
-		                new String(((JPasswordField) textpasswordField).getPassword()).isEmpty()) {
-		                JOptionPane.showMessageDialog(null, "Please fill in the information");
-		            } else {
-		                Class.forName("com.mysql.cj.jdbc.Driver");
-		                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/shop", "root", "11062005");
-		                String query = "insert into tk_khachhang (ten_tk, `Số Điện Thoại`, email, password) values(?,?,?,?)";
-		                PreparedStatement ps = con.prepareStatement(query);
-		                ps.setString(1, txtusername1.getText());
-		                ps.setString(2, txtPhoneNmuber1.getText());  // Chuyển từ setInt thành setString
-		                ps.setString(3, txtEmail1.getText());
-		                ps.setString(4, new String(((JPasswordField) textpasswordField).getPassword()));
+    public void actionPerformed(ActionEvent e) {
+        try {
+            if (txtusername1.getText().isEmpty() || txtPhoneNmuber1.getText().isEmpty() || txtEmail1.getText().isEmpty() ||
+                new String(((JPasswordField) textpasswordField).getPassword()).isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Vui Lòng Không Để Trống Thông Tin ");
+            } else {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/shop", "root", "11062005");
+                
+                String checkPhoneQuery = "SELECT * FROM tk_khachhang WHERE `Số Điện Thoại`=?";
+                PreparedStatement checkPhoneStmt = con.prepareStatement(checkPhoneQuery);
+                checkPhoneStmt.setString(1, txtPhoneNmuber1.getText());
+                ResultSet rs = checkPhoneStmt.executeQuery();
+                
+                if (rs.next()) {
+                    JOptionPane.showMessageDialog(btn_dktaikhoan, "Số điện thoại đã được sử dụng");
+                } else {
+                    String query = "insert into tk_khachhang (ten_tk, `Số Điện Thoại`, email, password) values(?,?,?,?)";
+                    PreparedStatement ps = con.prepareStatement(query);
+                    ps.setString(1, txtusername1.getText());
+                    ps.setString(2, txtPhoneNmuber1.getText());
+                    ps.setString(3, txtEmail1.getText());
+                    ps.setString(4, new String(((JPasswordField) textpasswordField).getPassword()));
+                    
+                    int i = ps.executeUpdate();
+                    if (i > 0) {
+                        JOptionPane.showMessageDialog(btn_dktaikhoan, "Đã đăng kí tài khoản thành công");
+                        dispose();
+                        Login login = new Login(null);
+                        login.setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(btn_dktaikhoan, "Lỗi khi đăng ký tài khoản");
+                    }
+                    ps.close();
+                }
+                
+                rs.close();
+                checkPhoneStmt.close();
+                con.close();
+            }
 
-		                int i = ps.executeUpdate();
-		                if (i > 0) {
-		                    JOptionPane.showMessageDialog(btn_dktaikhoan, "Đã đăng kí tài khoản thành công");
-		                    dispose();
-		                    Login login = new Login(null);
-		                    login.setVisible(true);
-		                } else {
-		                    JOptionPane.showMessageDialog(btn_dktaikhoan, "Lỗi khi đăng ký tài khoản");
-		                }
-		                ps.close();
-		                con.close();
-		            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+    }
+});
 
-		        } catch (Exception e1) {
-		            e1.printStackTrace();
-		        }
-		    }
-		});
 
 		
 		JLabel lblNewLabel_6 = new JLabel("");

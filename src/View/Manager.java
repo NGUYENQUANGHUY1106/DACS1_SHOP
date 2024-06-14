@@ -23,8 +23,11 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
 import java.awt.Color;
@@ -556,6 +559,39 @@ public class Manager extends JFrame {
 		txtmasan.setFont(new Font("Arial", Font.BOLD, 16));
 		txtmasan.setModel(new DefaultComboBoxModel(new String[] {"", "Sân 1", "Sân 2", "Sân 3", "Sân 4", "Sân 5", "Sân 6", "Sân 7", "Sân 8", "Sân 9 VIP", "Sân 10 VIP"}));
 		contentPane.add(txtmasan);
+		txtmasan.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        String selectedSan = (String) txtmasan.getSelectedItem();
+		        if (selectedSan != null && !selectedSan.isEmpty()) {
+		            if (selectedSan.equals("Sân 1") || selectedSan.equals("Sân 2") || selectedSan.equals("Sân 3") || 
+		                selectedSan.equals("Sân 4") || selectedSan.equals("Sân 5") || selectedSan.equals("Sân 6") || 
+		                selectedSan.equals("Sân 7") || selectedSan.equals("Sân 8")) {
+		                txtgia.setSelectedItem("150000");
+		            } else if (selectedSan.equals("Sân 9 VIP") || selectedSan.equals("Sân 10 VIP")) {
+		                txtgia.setSelectedItem("200000");
+		            }
+		        }
+		    }
+		});
+
+		Set<String> normalFields = new HashSet<>(Arrays.asList("Sân 1", "Sân 2", "Sân 3", "Sân 4", "Sân 5", "Sân 6", "Sân 7", "Sân 8"));
+		Set<String> vipFields = new HashSet<>(Arrays.asList("Sân 9 VIP", "Sân 10 VIP"));
+
+		txtmasan.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        String selectedSan = (String) txtmasan.getSelectedItem();
+		        if (selectedSan != null && !selectedSan.isEmpty()) {
+		            if (normalFields.contains(selectedSan)) {
+		                txtgia.setSelectedItem("150000");
+		            } else if (vipFields.contains(selectedSan)) {
+		                txtgia.setSelectedItem("200000");
+		            }
+		        }
+		    }
+		});
+
 		
 		txtkhachhang = new JTextField();
 		txtkhachhang.setBounds(458, 101, 212, 41);
@@ -568,6 +604,34 @@ public class Manager extends JFrame {
 		txtbatdau.setFont(new Font("Arial", Font.BOLD, 16));
 		txtbatdau.setModel(new DefaultComboBoxModel(new String[] {"", "6H", "7H", "7H30", "8H", "8H30", "9H", "9H30", "10H", "10H30", "13H", "13H30", "14H", "14H30", "15H", "15H30", "16H", "16H30", "17H", "17H30", "18H", "18H30", "19H", "19H30", "20H", "20H30", "21H", "21H30", "22H", "22H30", "23H"}));
 		contentPane.add(txtbatdau);
+		
+		txtbatdau.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        String batdau = (String) txtbatdau.getSelectedItem();
+		        if (batdau != null && !batdau.isEmpty()) {
+		            // Lấy giờ và phút từ chuỗi
+		            String[] timeParts = batdau.split("H");
+		            int hour = Integer.parseInt(timeParts[0]);
+		            int minute = 0;
+		            if (timeParts.length > 1) {
+		                minute = Integer.parseInt(timeParts[1]);
+		            }
+		            
+		            // Tăng giờ lên 1
+		            hour += 1;
+
+		            // Tạo chuỗi giờ kết thúc
+		            String kethuc = hour + "H";
+		            if (minute != 0) {
+		                kethuc += minute;
+		            }
+
+		            // Đặt giá trị cho JComboBox txtkethuc
+		            txtkethuc.setSelectedItem(kethuc);
+		        }
+		    }
+		});
 		
 		
 
